@@ -3,118 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terimakasih My Family</title>
+<title>Terimakasih My Family - HMIF</title>
 
 <style>
-
 /* ================= RESET ================= */
-
-body{
-margin:0;
-font-family:'Segoe UI',sans-serif;
-overflow:hidden;
-color:white;
-background:black;
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    color: white;
+    background: black;
 }
 
 /* ================= BACKGROUND FOTO ================= */
-
-.bg{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:-2;
+.bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
 }
 
-/* DESKTOP */
-.bg::before{
-content:"";
-position:absolute;
-width:100%;
-height:100%;
-background:url("foto.jpg") center center no-repeat;
-background-size:cover;
-filter:brightness(0.35);
+/* DESKTOP (Full Screen) */
+.bg::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("foto.jpg") center center no-repeat;
+    background-size: cover;
+    filter: brightness(0.35);
 }
 
-/* ================= MODE HP CINEMATIC ================= */
+/* ================= MODE HP (Anti-Kosong) ================= */
+@media(max-width: 768px) {
+    /* Layer 1: Background Blur (Untuk ngisi bagian kosong atas bawah) */
+    .bg::before {
+        background: url("foto.jpg") center center no-repeat;
+        background-size: cover; /* Menutup seluruh layar HP */
+        filter: blur(30px) brightness(0.3); /* Blur parah biar estetik */
+        transform: scale(1.2);
+    }
 
-@media(max-width:768px){
-
-/* blur background */
-.bg::before{
-background:url("foto.jpg") center center no-repeat;
-background-size:cover;
-filter:blur(25px) brightness(0.35);
-transform:scale(1.2);
+    /* Layer 2: Foto Asli (Tampil di tengah tanpa kepotong) */
+    .bg::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 60%; /* Sesuaikan tinggi ini kalau mau lebih besar/kecil */
+        background: url("foto.jpg") center center no-repeat;
+        background-size: contain; /* Foto utuh, tidak dipotong */
+        transform: translate(-50%, -50%);
+        z-index: -1;
+        box-shadow: 0 0 80px rgba(0,0,0,0.8); /* Efek kedalaman */
+    }
 }
 
-/* foto asli tengah */
-.bg::after{
-content:"";
-position:absolute;
-top:50%;
-left:50%;
-width:100%;
-height:100%;
-background:url("foto.jpg") center center no-repeat;
-background-size:contain;
-transform:translate(-50%,-50%);
-}
-
-}
-
-/* ================= STAR BACKGROUND ================= */
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
+/* ================= STAR BACKGROUND (Canvas) ================= */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 /* ================= CONTAINER ================= */
-
-.container{
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:20px;
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    box-sizing: border-box;
 }
 
 /* ================= TEXT ================= */
-
-#text{
-max-width:750px;
-font-size:28px;
-line-height:1.6;
-opacity:0;
-transition:1.5s;
+#text {
+    max-width: 800px;
+    font-size: 26px;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
 }
 
-@media(max-width:768px){
-#text{
-font-size:20px;
-}
+@media(max-width: 768px) {
+    #text {
+        font-size: 19px;
+    }
 }
 
 /* ================= BUTTON ================= */
-
-button{
-padding:14px 28px;
-border:none;
-border-radius:25px;
-background:#2563eb;
-color:white;
-font-size:18px;
-cursor:pointer;
-margin-top:20px;
+button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    background: #2563eb;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    transition: 0.3s;
 }
 
+button:hover {
+    background: #1d4ed8;
+    transform: scale(1.05);
+}
+
+#nextBtn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid white;
+}
 </style>
 </head>
 
@@ -124,194 +131,152 @@ margin-top:20px;
 <canvas id="stars"></canvas>
 
 <div class="container">
+    <div>
+        <h1 id="text"></h1>
+        
+        <button id="startBtn" onclick="startIntro()">
+            Klik untuk Memulai
+        </button>
 
-<div>
-<h1 id="text"></h1>
-
-<button id="startBtn" onclick="startIntro()">
-Klik untuk Memulai
-</button>
-
-<button id="nextBtn" onclick="nextManual()" style="display:none;">
-Lanjut →
-</button>
-
-</div>
-
+        <button id="nextBtn" onclick="nextManual()" style="display:none;">
+            Lanjut →
+        </button>
+    </div>
 </div>
 
 <audio id="music">
-<source src="musik.mp3" type="audio/mp3">
+    <source src="musik.mp3" type="audio/mp3">
 </audio>
 
 <script>
-
-/* ================= TEXT ================= */
-
-const introSlides=[
-"Mungkin ini terdengar sedikit lebay…",
-"Tapi setiap perjalanan pasti punya akhirnya.",
-"Dan setiap akhir selalu menyimpan cerita."
+/* ================= DATA TEKS ================= */
+const introSlides = [
+    "Mungkin ini terdengar sedikit lebay…",
+    "Tapi setiap perjalanan pasti punya akhirnya.",
+    "Dan setiap akhir selalu menyimpan cerita."
 ];
 
-const autoSlides=[
-
-"Assalamu’alaikum Warahmatullahi Wabarakatuh 💙",
-"Teman-teman pengurus keluarga besar HMIF periode 2025/2026 yang saya banggakan 🤗",
-"Hari ini menjadi momen yang sangat berarti bagi saya.",
-"Perjalanan yang kita mulai bersama dengan niat belajar, berproses, dan berjuang.",
-"Kini sampai pada akhir amanah saya sebagai Ketua HMIF.",
-
-"Perjalanan ini tidak selalu mudah.",
-"Kita pernah kekurangan SDM.",
-"Menghadapi banyak tantangan kegiatan.",
-"Menyatukan banyak pikiran.",
-"Dan melewati rasa lelah yang tidak semua orang lihat.",
-
-"Tapi dari semua itu…",
-"Saya melihat sesuatu yang paling berharga.",
-"Kebersamaan.",
-"Dan teman-teman yang tetap memilih bertahan untuk HMIF.",
-
-"Terima kasih karena sudah berjalan bersama saya.",
-"Membersamai setiap proses.",
-"Dan memberi warna dalam kepengurusan ini.",
-
-"Sekecil apa pun kontribusi kalian…",
-"Semuanya adalah bagian dari sejarah HMIF.",
-
-"Saya menyadari masih banyak kekurangan.",
-"Jika ada kata yang kurang berkenan.",
-"Keputusan yang belum tepat.",
-"Atau harapan yang belum terwujud…",
-
-"Dengan tulus saya memohon maaf.",
-
-"Hari ini amanah saya sebagai ketua selesai.",
-"Tapi saya tidak pernah berhenti menjadi bagian dari keluarga HMIF.",
-
-"Jabatan boleh selesai.",
-"Namun rasa memiliki semoga selalu kita jaga bersama.",
-
-"Kepada pemimpin HMIF berikutnya, selamat melanjutkan perjuangan.",
-"Pimpinlah dengan hati.",
-"Rangkul semua anggota.",
-"Dan jaga HMIF tetap hidup 💙",
-
-"Terima kasih atas setiap cerita.",
-"Perjuangan.",
-"Tawa.",
-"Dan pelajaran yang kita lalui bersama.",
-
-"Saya bangga pernah menjadi bagian dari perjalanan ini.",
-"Dan lebih bangga pernah memimpin orang-orang hebat seperti kalian.",
-
-"I love you all 🥰",
-"Wassalamu’alaikum Warahmatullahi Wabarakatuh 👋",
-"SEE YOU AGAIN MY FAMILY 💙"
+const autoSlides = [
+    "Assalamu’alaikum Warahmatullahi Wabarakatuh 💙",
+    "Teman-teman pengurus keluarga besar HMIF periode 2025/2026 yang saya banggakan 🤗",
+    "Hari ini menjadi momen yang sangat berarti bagi saya.",
+    "Perjalanan yang kita mulai bersama dengan niat belajar, berproses, dan berjuang.",
+    "Kini sampai pada akhir amanah saya sebagai Ketua HMIF.",
+    "Perjalanan ini tidak selalu mudah.",
+    "Kita pernah kekurangan SDM.",
+    "Menghadapi banyak tantangan kegiatan.",
+    "Menyatukan banyak pikiran.",
+    "Dan melewati rasa lelah yang tidak semua orang lihat.",
+    "Tapi dari semua itu…",
+    "Saya melihat sesuatu yang paling berharga.",
+    "Kebersamaan.",
+    "Dan teman-man yang tetap memilih bertahan untuk HMIF.",
+    "Terima kasih karena sudah berjalan bersama saya.",
+    "Membersamai setiap proses.",
+    "Dan memberi warna dalam kepengurusan ini.",
+    "Sekecil apa pun kontribusi kalian…",
+    "Semuanya adalah bagian dari sejarah HMIF.",
+    "Saya menyadari masih banyak kekurangan.",
+    "Jika ada kata yang kurang berkenan.",
+    "Keputusan yang belum tepat.",
+    "Atau harapan yang belum terwujud…",
+    "Dengan tulus saya memohon maaf.",
+    "Hari ini amanah saya sebagai ketua selesai.",
+    "Tapi saya tidak pernah berhenti menjadi bagian dari keluarga HMIF.",
+    "Jabatan boleh selesai.",
+    "Namun rasa memiliki semoga selalu kita jaga bersama.",
+    "Kepada pemimpin HMIF berikutnya, selamat melanjutkan perjuangan.",
+    "Pimpinlah dengan hati.",
+    "Rangkul semua anggota.",
+    "Dan jaga HMIF tetap hidup 💙",
+    "Terima kasih atas setiap cerita.",
+    "Perjuangan.",
+    "Tawa.",
+    "Dan pelajaran yang kita lalui bersama.",
+    "Saya bangga pernah menjadi bagian dari perjalanan ini.",
+    "Dan lebih bangga pernah memimpin orang-orang hebat seperti kalian.",
+    "I love you all 🥰",
+    "Wassalamu’alaikum Warahmatullahi Wabarakatuh 👋",
+    "SEE YOU AGAIN MY FAMILY 💙"
 ];
 
-let introIndex=0;
-let autoIndex=0;
+let introIndex = 0;
+let autoIndex = 0;
 
-/* ================= INTRO ================= */
-
-function startIntro(){
-document.getElementById("startBtn").style.display="none";
-document.getElementById("nextBtn").style.display="inline-block";
-showText(introSlides[introIndex]);
+/* ================= FUNGSI JALAN ================= */
+function startIntro() {
+    document.getElementById("startBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "inline-block";
+    showText(introSlides[introIndex]);
 }
 
-function nextManual(){
-
-introIndex++;
-
-if(introIndex<introSlides.length){
-showText(introSlides[introIndex]);
-}else{
-document.getElementById("nextBtn").style.display="none";
-startAutoSlides();
+function nextManual() {
+    introIndex++;
+    if(introIndex < introSlides.length) {
+        showText(introSlides[introIndex]);
+    } else {
+        document.getElementById("nextBtn").style.display = "none";
+        startAutoSlides();
+    }
 }
 
+function startAutoSlides() {
+    const music = document.getElementById("music");
+    music.play().catch(e => console.log("Audio play blocked: ", e));
+    nextAuto();
 }
 
-/* ================= AUTO STORY ================= */
-
-function startAutoSlides(){
-document.getElementById("music").play();
-nextAuto();
+function nextAuto() {
+    if(autoIndex < autoSlides.length) {
+        showText(autoSlides[autoIndex]);
+        autoIndex++;
+        setTimeout(nextAuto, 4000); // Ganti teks setiap 4 detik
+    }
 }
 
-function nextAuto(){
-
-showText(autoSlides[autoIndex]);
-
-autoIndex++;
-
-if(autoIndex<autoSlides.length){
-setTimeout(nextAuto,4500);
+function showText(message) {
+    const textEl = document.getElementById("text");
+    textEl.style.opacity = 0;
+    setTimeout(() => {
+        textEl.innerHTML = message;
+        textEl.style.opacity = 1;
+    }, 600);
 }
 
+/* ================= EFEK BINTANG ================= */
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
-
-/* ================= SHOW TEXT ================= */
-
-function showText(message){
-
-const text=document.getElementById("text");
-
-text.style.opacity=0;
-
-setTimeout(()=>{
-text.innerHTML=message;
-text.style.opacity=1;
-},500);
-
-}
-
-/* ================= STAR EFFECT ================= */
-
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-
-function resizeCanvas(){
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-}
-
 resizeCanvas();
-window.addEventListener("resize",resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 
-let stars=[];
-
-for(let i=0;i<150;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*2
-});
+let stars = [];
+for(let i = 0; i < 150; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2,
+        s: Math.random() * 0.5 + 0.2
+    });
 }
 
-function animateStars(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-ctx.fillStyle="white";
-
-stars.forEach(s=>{
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-
-s.y+=0.3;
-if(s.y>canvas.height)s.y=0;
-});
-
-requestAnimationFrame(animateStars);
+function animateStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    stars.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        s.y += s.s;
+        if(s.y > canvas.height) s.y = 0;
+    });
+    requestAnimationFrame(animateStars);
 }
-
 animateStars();
-
 </script>
 
 </body>
