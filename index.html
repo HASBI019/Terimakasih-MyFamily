@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -277,4 +278,285 @@ animateStars();
 </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saya Hasbi-Farewell</title>
+
+<style>
+
+/* RESET */
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+overflow:hidden;
+color:white;
+}
+
+/* FOTO BACKGROUND */
+.bg{
+position:fixed;
+width:100%;
+height:100%;
+background:url("foto.jpg") center/cover no-repeat;
+filter:brightness(0.35);
+z-index:-2;
+}
+
+/* BINTANG */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* CONTAINER */
+.container{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:20px;
+}
+
+#text{
+max-width:750px;
+font-size:28px;
+line-height:1.6;
+opacity:0;
+transition:1.5s;
+}
+
+/* BUTTON */
+button{
+padding:14px 28px;
+border:none;
+border-radius:25px;
+background:#2563eb;
+color:white;
+font-size:18px;
+cursor:pointer;
+margin-top:20px;
+}
+
+/* HP MODE */
+@media(max-width:768px){
+#text{
+font-size:20px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+<canvas id="stars"></canvas>
+
+<div class="container">
+
+<div>
+<h1 id="text"></h1>
+
+<button id="startBtn" onclick="startIntro()">
+Klik untuk Memulai
+</button>
+
+<button id="nextBtn" onclick="nextManual()" style="display:none;">
+Lanjut →
+</button>
+
+</div>
+
+</div>
+
+<audio id="music">
+<source src="musik.mp3" type="audio/mp3">
+</audio>
+
+<script>
+
+/* ===== TEXT SLIDES ===== */
+
+const introSlides=[
+"Mungkin ini terdengar sedikit lebay…",
+"Tapi setiap perjalanan pasti punya akhirnya.",
+"Dan setiap akhir selalu menyimpan cerita."
+];
+
+const autoSlides=[
+
+"Assalamu’alaikum Warahmatullahi Wabarakatuh 💙",
+
+"Teman-teman pengurus keluarga besar HMIF periode 2025/2026 yang saya banggakan 🤗",
+
+"Hari ini menjadi momen yang sangat berarti bagi saya.",
+
+"Perjalanan yang kita mulai bersama dengan niat belajar, berproses, dan berjuang untuk organisasi yang kita cintai.",
+
+"Kini sampai pada akhir amanah saya sebagai Ketua Himpunan Mahasiswa Informatika.",
+
+"Perjalanan ini tidak selalu mudah.",
+"Kita pernah kekurangan SDM.",
+"Menghadapi banyak tantangan kegiatan.",
+"Menyatukan banyak pikiran.",
+"Dan melewati rasa lelah yang mungkin tidak semua orang lihat.",
+
+"Tapi dari semua itu…",
+"Saya melihat sesuatu yang paling berharga.",
+"Kebersamaan.",
+"Dan teman-teman yang tetap memilih bertahan untuk HMIF.",
+
+"Terima kasih karena sudah berjalan bersama saya.",
+"Membersamai setiap proses.",
+"Dan memberi warna dalam kepengurusan ini.",
+
+"Sekecil apa pun kontribusi kalian…",
+"Semuanya adalah bagian dari sejarah HMIF.",
+
+"Saya menyadari selama memimpin masih banyak kekurangan.",
+"Jika ada kata yang kurang berkenan.",
+"Keputusan yang belum tepat.",
+"Atau harapan yang belum terwujud…",
+
+"Dengan tulus saya memohon maaf.",
+
+"Hari ini amanah saya sebagai ketua selesai.",
+"Tapi saya tidak pernah berhenti menjadi bagian dari keluarga HMIF.",
+
+"Jabatan boleh selesai.",
+"Namun rasa memiliki terhadap organisasi ini semoga selalu kita jaga bersama.",
+
+"Kepada pemimpin HMIF yang telah terpilih, selamat melanjutkan perjuangan.",
+"Pimpinlah dengan hati.",
+"Rangkul semua anggota.",
+"Dan jaga HMIF tetap hidup dengan kebersamaan 💙",
+
+"Terima kasih atas setiap cerita.",
+"Perjuangan.",
+"Tawa.",
+"Dan pelajaran yang telah kita lalui bersama.",
+
+"Saya bangga pernah menjadi bagian dari perjalanan ini.",
+"Dan lebih bangga pernah memimpin orang-orang hebat seperti kalian.",
+
+"I love you all 🥰",
+
+"Wassalamu’alaikum Warahmatullahi Wabarakatuh 👋",
+
+"SEE YOU AGAIN MY FAMILY 💙"
+];
+
+let introIndex=0;
+let autoIndex=0;
+
+function startIntro(){
+
+document.getElementById("startBtn").style.display="none";
+document.getElementById("nextBtn").style.display="inline-block";
+
+showText(introSlides[introIndex]);
+
+}
+
+function nextManual(){
+
+introIndex++;
+
+if(introIndex<introSlides.length){
+showText(introSlides[introIndex]);
+}else{
+
+document.getElementById("nextBtn").style.display="none";
+
+startAutoSlides();
+}
+
+}
+
+/* ===== AUTO STORY ===== */
+
+function startAutoSlides(){
+
+document.getElementById("music").play();
+
+nextAuto();
+
+}
+
+function nextAuto(){
+
+showText(autoSlides[autoIndex]);
+
+autoIndex++;
+
+if(autoIndex<autoSlides.length){
+setTimeout(nextAuto,4500);
+}
+
+}
+
+/* ===== TEXT EFFECT ===== */
+
+function showText(message){
+
+const text=document.getElementById("text");
+
+text.style.opacity=0;
+
+setTimeout(()=>{
+text.innerHTML=message;
+text.style.opacity=1;
+},500);
+
+}
+
+/* ===== STAR BACKGROUND ===== */
+
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let stars=[];
+
+for(let i=0;i<150;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2
+});
+}
+
+function animateStars(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="white";
+
+stars.forEach(s=>{
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+
+s.y+=0.3;
+if(s.y>canvas.height)s.y=0;
+});
+
+requestAnimationFrame(animateStars);
+}
+
+animateStars();
+
+</script>
+
+</body>
+>>>>>>> e86ceecd52c7f844f83b07902d305f4471fc1d34
 </html>
