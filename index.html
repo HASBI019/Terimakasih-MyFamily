@@ -3,46 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Terimakasih My Family - HMIF</title>
+<title>Terimakasih My Family</title>
 
 <style>
 /* ================= RESET ================= */
 body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
     overflow: hidden;
     color: white;
     background: black;
 }
 
-/* ================= BACKGROUND FOTO (3 LAYER) ================= */
-.bg-wrapper {
+/* ================= BACKGROUND SYSTEM ================= */
+.bg-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: -3;
-    /* Ini kuncinya biar foto nambah ke atas-bawah tanpa blur */
-    background: url("foto.jpg");
-    background-size: contain; /* Foto utuh */
-    background-repeat: repeat; /* Mengulang foto ke semua arah jika kosong */
-    background-position: center center;
+    display: flex;
+    flex-direction: column;
+    background: black;
 }
 
-/* Overlay Gelap (Biar foto gak terlalu terang) */
-.bg-overlay {
+/* Foto di Laptop: Satu foto full layar tapi digelapin */
+.bg-item {
+    flex: 1;
+    background: url("foto.jpg") center center no-repeat;
+    background-size: cover;
+    filter: brightness(0.3); /* Biar nggak terlalu terang */
+}
+
+/* Element tambahan buat di HP (Default sembunyi) */
+.bg-extra {
+    display: none;
+}
+
+/* ================= MODE HP (ATAS-TENGAH-BAWAH) ================= */
+@media(max-width: 768px) {
+    .bg-container {
+        display: block; /* Stack vertikal */
+        overflow-y: auto;
+    }
+
+    .bg-item, .bg-extra {
+        display: block;
+        width: 100%;
+        height: 33.33vh; /* Bagi 3 layar sama rata */
+        background: url("foto.jpg") center center no-repeat;
+        background-size: contain; /* Foto utuh nggak kepotong */
+        filter: brightness(0.4); /* Transparansi/kegelapan diatur di sini */
+    }
+}
+
+/* Layer Hitam Tambahan biar teks makin jelas */
+.overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.4);
     z-index: -2;
-    /* Atur kegelapan di sini (0.7 = 70% gelap) */
-    background: rgba(0, 0, 0, 0.7); 
 }
 
-/* ================= STAR BACKGROUND (Canvas) ================= */
+/* ================= STAR BACKGROUND ================= */
 canvas {
     position: fixed;
     top: 0;
@@ -58,26 +86,21 @@ canvas {
     align-items: center;
     text-align: center;
     padding: 20px;
-    box-sizing: border-box;
 }
 
-/* ================= TEXT ================= */
 #text {
-    max-width: 800px;
+    max-width: 750px;
     font-size: 26px;
     line-height: 1.6;
     opacity: 0;
     transition: 1s;
-    text-shadow: 2px 2px 8px rgba(0,0,0,1);
+    text-shadow: 3px 3px 10px rgba(0,0,0,1);
 }
 
 @media(max-width: 768px) {
-    #text {
-        font-size: 19px;
-    }
+    #text { font-size: 19px; }
 }
 
-/* ================= BUTTON ================= */
 button {
     padding: 14px 28px;
     border: none;
@@ -89,32 +112,22 @@ button {
     margin-top: 20px;
     font-weight: bold;
 }
-
-#nextBtn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid white;
-}
 </style>
 </head>
 
 <body>
 
-<div class="bg-wrapper"></div>
-<div class="bg-overlay"></div>
+<div class="bg-container">
+    <div class="bg-extra"></div> <div class="bg-item"></div>  <div class="bg-extra"></div> </div>
 
+<div class="overlay"></div>
 <canvas id="stars"></canvas>
 
 <div class="container">
     <div>
         <h1 id="text"></h1>
-        
-        <button id="startBtn" onclick="startIntro()">
-            Klik untuk Memulai
-        </button>
-
-        <button id="nextBtn" onclick="nextManual()" style="display:none;">
-            Lanjut →
-        </button>
+        <button id="startBtn" onclick="startIntro()">Klik untuk Memulai</button>
+        <button id="nextBtn" onclick="nextManual()" style="display:none;">Lanjut →</button>
     </div>
 </div>
 
@@ -123,127 +136,50 @@ button {
 </audio>
 
 <script>
-/* ================= DATA TEKS ================= */
-const introSlides = [
-    "Mungkin ini terdengar sedikit lebay…",
-    "Tapi setiap perjalanan pasti punya akhirnya.",
-    "Dan setiap akhir selalu menyimpan cerita."
-];
+const introSlides=["Mungkin ini terdengar sedikit lebay…","Tapi setiap perjalanan pasti punya akhirnya.","Dan setiap akhir selalu menyimpan cerita."];
+const autoSlides=["Assalamu’alaikum Warahmatullahi Wabarakatuh 💙","Teman-teman pengurus keluarga besar HMIF periode 2025/2026 yang saya banggakan 🤗","Hari ini menjadi momen yang sangat berarti bagi saya.","Perjalanan yang kita mulai bersama dengan niat belajar, berproses, dan berjuang.","Kini sampai pada akhir amanah saya sebagai Ketua HMIF.","Perjalanan ini tidak selalu mudah.","Kita pernah kekurangan SDM.","Menghadapi banyak tantangan kegiatan.","Menyatukan banyak pikiran.","Dan melewati rasa lelah yang tidak semua orang lihat.","Tapi dari semua itu…","Saya melihat sesuatu yang paling berharga.","Kebersamaan.","Dan teman-teman yang tetap memilih bertahan untuk HMIF.","Terima kasih karena sudah berjalan bersama saya.","Membersamai setiap proses.","Dan memberi warna dalam kepengurusan ini.","Sekecil apa pun kontribusi kalian…","Semuanya adalah bagian dari sejarah HMIF.","Saya menyadari masih banyak kekurangan.","Jika ada kata yang kurang berkenan.","Keputusan yang belum tepat.","Atau harapan yang belum terwujud…","Dengan tulus saya memohon maaf.","Hari ini amanah saya sebagai ketua selesai.","Tapi saya tidak pernah berhenti menjadi bagian dari keluarga HMIF.","Jabatan boleh selesai.","Namun rasa memiliki semoga selalu kita jaga bersama.","Kepada pemimpin HMIF berikutnya, selamat melanjutkan perjuangan.","Pimpinlah dengan hati.","Rangkul semua anggota.","Dan jaga HMIF tetap hidup 💙","Terima kasih atas setiap cerita.","Perjuangan.","Tawa.","Dan pelajaran yang kita lalui bersama.","Saya bangga pernah menjadi bagian dari perjalanan ini.","Dan lebih bangga pernah memimpin orang-orang hebat seperti kalian.","I love you all 🥰","Wassalamu’alaikum Warahmatullahi Wabarakatuh 👋","SEE YOU AGAIN MY FAMILY 💙"];
 
-const autoSlides = [
-    "Assalamu’alaikum Warahmatullahi Wabarakatuh 💙",
-    "Teman-teman pengurus keluarga besar HMIF periode 2025/2026 yang saya banggakan 🤗",
-    "Hari ini menjadi momen yang sangat berarti bagi saya.",
-    "Perjalanan yang kita mulai bersama dengan niat belajar, berproses, dan berjuang.",
-    "Kini sampai pada akhir amanah saya sebagai Ketua HMIF.",
-    "Perjalanan ini tidak selalu mudah.",
-    "Kita pernah kekurangan SDM.",
-    "Menghadapi banyak tantangan kegiatan.",
-    "Menyatukan banyak pikiran.",
-    "Dan melewati rasa lelah yang tidak semua orang lihat.",
-    "Tapi dari semua itu…",
-    "Saya melihat sesuatu yang paling berharga.",
-    "Kebersamaan.",
-    "Dan teman-teman yang tetap memilih bertahan untuk HMIF.",
-    "Terima kasih karena sudah berjalan bersama saya.",
-    "Membersamai setiap proses.",
-    "Dan memberi warna dalam kepengurusan ini.",
-    "Sekecil apa pun kontribusi kalian…",
-    "Semuanya adalah bagian dari sejarah HMIF.",
-    "Saya menyadari masih banyak kekurangan.",
-    "Jika ada kata yang kurang berkenan.",
-    "Keputusan yang belum tepat.",
-    "Atau harapan yang belum terwujud…",
-    "Dengan tulus saya memohon maaf.",
-    "Hari ini amanah saya sebagai ketua selesai.",
-    "Tapi saya tidak pernah berhenti menjadi bagian dari keluarga HMIF.",
-    "Jabatan boleh selesai.",
-    "Namun rasa memiliki semoga selalu kita jaga bersama.",
-    "Kepada pemimpin HMIF berikutnya, selamat melanjutkan perjuangan.",
-    "Pimpinlah dengan hati.",
-    "Rangkul semua anggota.",
-    "Dan jaga HMIF tetap hidup 💙",
-    "Terima kasih atas setiap cerita.",
-    "Perjuangan.",
-    "Tawa.",
-    "Dan pelajaran yang kita lalui bersama.",
-    "Saya bangga pernah menjadi bagian dari perjalanan ini.",
-    "Dan lebih bangga pernah memimpin orang-orang hebat seperti kalian.",
-    "I love you all 🥰",
-    "Wassalamu’alaikum Warahmatullahi Wabarakatuh 👋",
-    "SEE YOU AGAIN MY FAMILY 💙"
-];
+let introIndex=0; let autoIndex=0;
 
-let introIndex = 0;
-let autoIndex = 0;
-
-function startIntro() {
-    document.getElementById("startBtn").style.display = "none";
-    document.getElementById("nextBtn").style.display = "inline-block";
+function startIntro(){
+    document.getElementById("startBtn").style.display="none";
+    document.getElementById("nextBtn").style.display="inline-block";
     showText(introSlides[introIndex]);
 }
 
-function nextManual() {
+function nextManual(){
     introIndex++;
-    if(introIndex < introSlides.length) {
-        showText(introSlides[introIndex]);
-    } else {
-        document.getElementById("nextBtn").style.display = "none";
-        startAutoSlides();
-    }
+    if(introIndex<introSlides.length) showText(introSlides[introIndex]);
+    else { document.getElementById("nextBtn").style.display="none"; startAutoSlides(); }
 }
 
-function startAutoSlides() {
+function startAutoSlides(){
     document.getElementById("music").play();
     nextAuto();
 }
 
-function nextAuto() {
+function nextAuto(){
     showText(autoSlides[autoIndex]);
     autoIndex++;
-    if(autoIndex < autoSlides.length) {
-        setTimeout(nextAuto, 4500);
-    }
+    if(autoIndex<autoSlides.length) setTimeout(nextAuto,4500);
 }
 
-function showText(message) {
-    const text = document.getElementById("text");
-    text.style.opacity = 0;
-    setTimeout(() => {
-        text.innerHTML = message;
-        text.style.opacity = 1;
-    }, 500);
+function showText(message){
+    const text=document.getElementById("text");
+    text.style.opacity=0;
+    setTimeout(()=>{ text.innerHTML=message; text.style.opacity=1; },500);
 }
 
-/* ================= STAR EFFECT ================= */
-const canvas = document.getElementById("stars");
-const ctx = canvas.getContext("2d");
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let stars = [];
-for(let i = 0; i < 150; i++) {
-    stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 2
-    });
-}
-
-function animateStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-    stars.forEach(s => {
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-        s.y += 0.3;
-        if(s.y > canvas.height) s.y = 0;
-    });
+// BINTANG
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+resizeCanvas(); window.addEventListener("resize",resizeCanvas);
+let stars=[];
+for(let i=0;i<150;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2});
+function animateStars(){
+    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle="white";
+    stars.forEach(s=>{ ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); s.y+=0.3; if(s.y>canvas.height)s.y=0; });
     requestAnimationFrame(animateStars);
 }
 animateStars();
