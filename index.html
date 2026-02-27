@@ -16,49 +16,56 @@ body {
 }
 
 /* ================= BACKGROUND FOTO ================= */
-.bg {
+.bg-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -2;
+    z-index: -3; /* Di paling belakang */
+    overflow: hidden;
 }
 
-/* DESKTOP (Full Screen) */
-.bg::before {
-    content: "";
+/* Layer 1: Background Blur & Sangat Gelap (Penuh Selayar) */
+.bg-base {
     position: absolute;
     width: 100%;
     height: 100%;
     background: url("foto.jpg") center center no-repeat;
     background-size: cover;
-    filter: brightness(0.35);
+    /* Blur dan Kegelapan ditingkatkan agar tidak terlalu terang */
+    filter: blur(25px) brightness(0.2); 
+    transform: scale(1.1); /* Sedikit zoom untuk menghilangkan pinggiran blur */
 }
 
-/* ================= MODE HP (Anti-Kosong) ================= */
-@media(max-width: 768px) {
-    /* Layer 1: Background Blur (Untuk ngisi bagian kosong atas bawah) */
-    .bg::before {
-        background: url("foto.jpg") center center no-repeat;
-        background-size: cover; /* Menutup seluruh layar HP */
-        filter: blur(30px) brightness(0.3); /* Blur parah biar estetik */
-        transform: scale(1.2);
-    }
+/* Layer 2: Foto Asli Utuh di Tengah (Hanya Aktif di HP) */
+.bg-photo-main {
+    display: none; /* Default tersembunyi untuk desktop */
+}
 
-    /* Layer 2: Foto Asli (Tampil di tengah tanpa kepotong) */
-    .bg::after {
-        content: "";
+/* ================= MODE HP (Anti-Kosong & Tidak Terang) ================= */
+@media(max-width: 768px) {
+    
+    .bg-photo-main {
+        display: block; /* Tampilkan di HP */
         position: absolute;
         top: 50%;
         left: 50%;
         width: 100%;
-        height: 60%; /* Sesuaikan tinggi ini kalau mau lebih besar/kecil */
+        /* Atur tinggi maksimal agar ada jarak di atas/bawah untuk teks, 
+           tapi fotonya sendiri tetap utuh */
+        max-height: 65vh; 
         background: url("foto.jpg") center center no-repeat;
-        background-size: contain; /* Foto utuh, tidak dipotong */
+        background-size: contain; /* Foto utuh tanpa kepotong */
         transform: translate(-50%, -50%);
         z-index: -1;
-        box-shadow: 0 0 80px rgba(0,0,0,0.8); /* Efek kedalaman */
+        /* Efek bayangan halus */
+        box-shadow: 0 0 50px rgba(0,0,0,0.6); 
+    }
+    
+    /* Sedikit penyesuaian untuk desktop yang dikecilkan */
+    .bg-base {
+        filter: blur(25px) brightness(0.2);
     }
 }
 
@@ -67,18 +74,29 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: -2; /* Di depan background foto, di belakang teks */
+    opacity: 0.6; /* Membuat bintang tidak terlalu mencolok */
 }
 
-/* ================= CONTAINER ================= */
+/* ================= CONTAINER TEKS ================= */
 .container {
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* Ubah ke flex-end di HP agar teks ada di area bawah yang lebih gelap */
+    align-items: center; 
     text-align: center;
-    padding: 30px;
+    padding: 20px;
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+@media(max-width: 768px) {
+    .container {
+        align-items: flex-end; /* Teks di bawah foto */
+        padding-bottom: 50px; /* Jarak dari bawah layar */
+    }
 }
 
 /* ================= TEXT ================= */
@@ -87,13 +105,18 @@ canvas {
     font-size: 26px;
     line-height: 1.6;
     opacity: 0;
-    transition: opacity 1.2s ease-in-out;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+    transition: opacity 1s ease-in-out;
+    /* Glow/bayangan teks untuk keterbacaan ekstra */
+    text-shadow: 0 0 15px rgba(0,0,0,1), 2px 2px 3px rgba(0,0,0,1);
+    margin-bottom: 20px;
 }
 
 @media(max-width: 768px) {
     #text {
-        font-size: 19px;
+        font-size: 18px;
+        background: rgba(0,0,0,0.5); /* Background teks semi-transparan */
+        padding: 15px;
+        border-radius: 10px;
     }
 }
 
@@ -107,9 +130,10 @@ button {
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 20px;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
     transition: 0.3s;
+    position: relative;
+    z-index: 2;
 }
 
 button:hover {
@@ -120,14 +144,17 @@ button:hover {
 #nextBtn {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);
-    border: 1px solid white;
+    border: 1px solid rgba(255,255,255,0.5);
+    color: white;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
+<div class="bg-wrapper">
+    <div class="bg-base"></div> <div class="bg-photo-main"></div> </div>
+
 <canvas id="stars"></canvas>
 
 <div class="container">
@@ -170,7 +197,7 @@ const autoSlides = [
     "Tapi dari semua itu…",
     "Saya melihat sesuatu yang paling berharga.",
     "Kebersamaan.",
-    "Dan teman-man yang tetap memilih bertahan untuk HMIF.",
+    "Dan teman-teman yang tetap memilih bertahan untuk HMIF.",
     "Terima kasih karena sudah berjalan bersama saya.",
     "Membersamai setiap proses.",
     "Dan memberi warna dalam kepengurusan ini.",
@@ -222,7 +249,11 @@ function nextManual() {
 
 function startAutoSlides() {
     const music = document.getElementById("music");
-    music.play().catch(e => console.log("Audio play blocked: ", e));
+    // Penanganan error jika autoplay diblokir browser
+    music.play().catch(e => {
+        console.log("Audio play blocked, but story continues.", e);
+        // Bisa tambahkan tombol 'Play Music' manual di sini jika perlu
+    });
     nextAuto();
 }
 
@@ -230,7 +261,8 @@ function nextAuto() {
     if(autoIndex < autoSlides.length) {
         showText(autoSlides[autoIndex]);
         autoIndex++;
-        setTimeout(nextAuto, 4000); // Ganti teks setiap 4 detik
+        // Waktu ganti teks sedikit dipercepat agar tidak terlalu membosankan
+        setTimeout(nextAuto, 4200); 
     }
 }
 
@@ -240,7 +272,7 @@ function showText(message) {
     setTimeout(() => {
         textEl.innerHTML = message;
         textEl.style.opacity = 1;
-    }, 600);
+    }, 500); // Waktu transisi sedikit lebih cepat
 }
 
 /* ================= EFEK BINTANG ================= */
@@ -259,14 +291,14 @@ for(let i = 0; i < 150; i++) {
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 2,
-        s: Math.random() * 0.5 + 0.2
+        r: Math.random() * 1.5, // Bintang sedikit lebih kecil
+        s: Math.random() * 0.4 + 0.1 // Kecepatan gerak lambat
     });
 }
 
 function animateStars() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Bintang agak transparan
     stars.forEach(s => {
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
