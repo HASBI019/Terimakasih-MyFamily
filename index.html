@@ -15,58 +15,31 @@ body {
     background: black;
 }
 
-/* ================= BACKGROUND FOTO ================= */
+/* ================= BACKGROUND FOTO (3 LAYER) ================= */
 .bg-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -3; /* Di paling belakang */
-    overflow: hidden;
+    z-index: -3;
+    /* Ini kuncinya biar foto nambah ke atas-bawah tanpa blur */
+    background: url("foto.jpg");
+    background-size: contain; /* Foto utuh */
+    background-repeat: repeat; /* Mengulang foto ke semua arah jika kosong */
+    background-position: center center;
 }
 
-/* Layer 1: Background Blur & Sangat Gelap (Penuh Selayar) */
-.bg-base {
-    position: absolute;
+/* Overlay Gelap (Biar foto gak terlalu terang) */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: url("foto.jpg") center center no-repeat;
-    background-size: cover;
-    /* Blur dan Kegelapan ditingkatkan agar tidak terlalu terang */
-    filter: blur(25px) brightness(0.2); 
-    transform: scale(1.1); /* Sedikit zoom untuk menghilangkan pinggiran blur */
-}
-
-/* Layer 2: Foto Asli Utuh di Tengah (Hanya Aktif di HP) */
-.bg-photo-main {
-    display: none; /* Default tersembunyi untuk desktop */
-}
-
-/* ================= MODE HP (Anti-Kosong & Tidak Terang) ================= */
-@media(max-width: 768px) {
-    
-    .bg-photo-main {
-        display: block; /* Tampilkan di HP */
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        /* Atur tinggi maksimal agar ada jarak di atas/bawah untuk teks, 
-           tapi fotonya sendiri tetap utuh */
-        max-height: 65vh; 
-        background: url("foto.jpg") center center no-repeat;
-        background-size: contain; /* Foto utuh tanpa kepotong */
-        transform: translate(-50%, -50%);
-        z-index: -1;
-        /* Efek bayangan halus */
-        box-shadow: 0 0 50px rgba(0,0,0,0.6); 
-    }
-    
-    /* Sedikit penyesuaian untuk desktop yang dikecilkan */
-    .bg-base {
-        filter: blur(25px) brightness(0.2);
-    }
+    z-index: -2;
+    /* Atur kegelapan di sini (0.7 = 70% gelap) */
+    background: rgba(0, 0, 0, 0.7); 
 }
 
 /* ================= STAR BACKGROUND (Canvas) ================= */
@@ -74,29 +47,18 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: -2; /* Di depan background foto, di belakang teks */
-    opacity: 0.6; /* Membuat bintang tidak terlalu mencolok */
+    z-index: -1;
 }
 
-/* ================= CONTAINER TEKS ================= */
+/* ================= CONTAINER ================= */
 .container {
     height: 100vh;
     display: flex;
     justify-content: center;
-    /* Ubah ke flex-end di HP agar teks ada di area bawah yang lebih gelap */
-    align-items: center; 
+    align-items: center;
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-}
-
-@media(max-width: 768px) {
-    .container {
-        align-items: flex-end; /* Teks di bawah foto */
-        padding-bottom: 50px; /* Jarak dari bawah layar */
-    }
 }
 
 /* ================= TEXT ================= */
@@ -105,55 +67,40 @@ canvas {
     font-size: 26px;
     line-height: 1.6;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
-    /* Glow/bayangan teks untuk keterbacaan ekstra */
-    text-shadow: 0 0 15px rgba(0,0,0,1), 2px 2px 3px rgba(0,0,0,1);
-    margin-bottom: 20px;
+    transition: 1s;
+    text-shadow: 2px 2px 8px rgba(0,0,0,1);
 }
 
 @media(max-width: 768px) {
     #text {
-        font-size: 18px;
-        background: rgba(0,0,0,0.5); /* Background teks semi-transparan */
-        padding: 15px;
-        border-radius: 10px;
+        font-size: 19px;
     }
 }
 
 /* ================= BUTTON ================= */
 button {
-    padding: 15px 30px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 30px;
+    border-radius: 25px;
     background: #2563eb;
     color: white;
     font-size: 18px;
-    font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-    transition: 0.3s;
-    position: relative;
-    z-index: 2;
-}
-
-button:hover {
-    background: #1d4ed8;
-    transform: scale(1.05);
+    margin-top: 20px;
+    font-weight: bold;
 }
 
 #nextBtn {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.5);
-    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid white;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg-wrapper">
-    <div class="bg-base"></div> <div class="bg-photo-main"></div> </div>
+<div class="bg-wrapper"></div>
+<div class="bg-overlay"></div>
 
 <canvas id="stars"></canvas>
 
@@ -230,7 +177,6 @@ const autoSlides = [
 let introIndex = 0;
 let autoIndex = 0;
 
-/* ================= FUNGSI JALAN ================= */
 function startIntro() {
     document.getElementById("startBtn").style.display = "none";
     document.getElementById("nextBtn").style.display = "inline-block";
@@ -248,37 +194,30 @@ function nextManual() {
 }
 
 function startAutoSlides() {
-    const music = document.getElementById("music");
-    // Penanganan error jika autoplay diblokir browser
-    music.play().catch(e => {
-        console.log("Audio play blocked, but story continues.", e);
-        // Bisa tambahkan tombol 'Play Music' manual di sini jika perlu
-    });
+    document.getElementById("music").play();
     nextAuto();
 }
 
 function nextAuto() {
+    showText(autoSlides[autoIndex]);
+    autoIndex++;
     if(autoIndex < autoSlides.length) {
-        showText(autoSlides[autoIndex]);
-        autoIndex++;
-        // Waktu ganti teks sedikit dipercepat agar tidak terlalu membosankan
-        setTimeout(nextAuto, 4200); 
+        setTimeout(nextAuto, 4500);
     }
 }
 
 function showText(message) {
-    const textEl = document.getElementById("text");
-    textEl.style.opacity = 0;
+    const text = document.getElementById("text");
+    text.style.opacity = 0;
     setTimeout(() => {
-        textEl.innerHTML = message;
-        textEl.style.opacity = 1;
-    }, 500); // Waktu transisi sedikit lebih cepat
+        text.innerHTML = message;
+        text.style.opacity = 1;
+    }, 500);
 }
 
-/* ================= EFEK BINTANG ================= */
+/* ================= STAR EFFECT ================= */
 const canvas = document.getElementById("stars");
 const ctx = canvas.getContext("2d");
-
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -291,19 +230,18 @@ for(let i = 0; i < 150; i++) {
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.5, // Bintang sedikit lebih kecil
-        s: Math.random() * 0.4 + 0.1 // Kecepatan gerak lambat
+        r: Math.random() * 2
     });
 }
 
 function animateStars() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Bintang agak transparan
+    ctx.fillStyle = "white";
     stars.forEach(s => {
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
-        s.y += s.s;
+        s.y += 0.3;
         if(s.y > canvas.height) s.y = 0;
     });
     requestAnimationFrame(animateStars);
